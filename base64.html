@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon">
+    <title>base64解码/编码工具</title>
+    <link rel="stylesheet" href="./style/page.css" type="text/css" />
+  </head>
+  <body>
+    <div class="mod-panel">
+      <h1>base64解码/编码工具</h1>
+      <div class="row">
+        <div class="col-md-12">
+          <form class="form-horizontal">
+            <div class="form-group clearfix">
+              <label class="col-md-2 control-label">转换内容：</label>
+              <div class="col-md-8">
+                <textarea id="input" class="form-control" style="height: 150px"></textarea>
+              </div>
+            </div>
+            <div class="form-group clearfix">
+              <label class="col-md-2 control-label"></label>
+              <div class="col-md-8">
+                <button id="encode" class="btn btn-primary" type="button">Base64编码</button>
+                <button id="decode" class="btn btn-primary" type="button">Base64解码</button>
+              </div>
+            </div>
+            <div class="form-group clearfix">
+              <label class="col-md-2 control-label">转换结果：</label>
+              <div class="col-md-8">
+                <textarea id="output" class="form-control" style="height: 150px"></textarea>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <script type="text/javascript" src="./lib/jquery.js"></script>
+    <script type="text/javascript" src="./lib/core-min.js"></script>
+    <script type="text/javascript" src="./lib/enc-base64-min.js"></script>
+    <script type="text/javascript">
+      ;(function () {
+        var $mod_panel = $('.mod-panel')
+        var $input = $mod_panel.find('#input')
+        var $output = $mod_panel.find('#output')
+        $mod_panel.find('#encode').click(function () {
+          var value = $input.val()
+          var result = ''
+          $output.val('')
+          try {
+            if (value) {
+              result = CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(value))
+              $output.val(result)
+            }
+          } catch (e) {
+            alert(e.message)
+          }
+        })
+        $mod_panel.find('#decode').click(function () {
+          var value = $input.val()
+          var result = ''
+          $output.val('')
+          try {
+            if (value) {
+              value = value.split('\n')
+              var words = ''
+              for (var i = 0; i < value.length; i++) {
+                words = CryptoJS.enc.Base64.parse(value[i])
+                result += words.toString(CryptoJS.enc.Utf8) + '\n'
+              }
+              $output.val(result)
+            }
+          } catch (e) {
+            alert(e.message)
+          }
+        })
+      })()
+    </script>
+  </body>
+</html>
