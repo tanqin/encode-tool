@@ -1,14 +1,7 @@
-iframe {
-  display: block;
+body {
+  padding-top: 50px;
 }
-
 /* bootstrap */
-.content * {
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
-}
-
 label {
   display: inline-block;
   max-width: 100%;
@@ -489,7 +482,7 @@ textarea.form-control {
   padding: 5px 0;
   margin-bottom: 20px;
 }
-
+.mod-panel h3,
 .mod-panel h1 {
   line-height: 1.1;
   text-align: center;

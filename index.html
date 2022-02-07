@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon" />
     <title>base64解码/编码工具</title>
     <link rel="stylesheet" href="./style/page.css" type="text/css" />
   </head>
@@ -55,7 +55,7 @@
               $output.val(result)
             }
           } catch (e) {
-            alert(e.message)
+            toast('😓 ' + e.message, 3000)
           }
         })
         $mod_panel.find('#decode').click(function () {
@@ -73,10 +73,26 @@
               $output.val(result)
             }
           } catch (e) {
-            alert(e.message)
+            toast('😓 ' + e.message, 3000)
           }
         })
       })()
+      function toast(msg, duration) {
+        duration = isNaN(duration) ? 3000 : duration
+        var m = document.createElement('div')
+        m.innerHTML = msg
+        m.style.cssText =
+          'font-family:siyuan;max-width:60%;min-width: 150px;padding:0 14px;height: 40px;color: rgb(230, 162, 60);line-height: 40px;text-align: center;border-radius: 4px;border:1px solid #faecd8;position: fixed;top: 4%;left: 50%;transform: translate(-50%, -50%);z-index: 999999;background: #fdf6ec;font-size: 16px;'
+        document.body.appendChild(m)
+        setTimeout(function () {
+          var d = 0.5
+          m.style.webkitTransition = '-webkit-transform ' + d + 's ease-in, opacity ' + d + 's ease-in'
+          m.style.opacity = '0'
+          setTimeout(function () {
+            document.body.removeChild(m)
+          }, d * 1000)
+        }, duration)
+      }
     </script>
   </body>
 </html>
