@@ -53,9 +53,12 @@
             if (value) {
               result = CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(value))
               $output.val(result)
+              $output.select()
+              document.execCommand('Copy')
+              toast('✅ 转换结果已复制到剪切板', 3000, 'success')
             }
           } catch (e) {
-            toast('😓 ' + e.message, 3000)
+            toast('😓 ' + e.message, 3000, 'warning')
           }
         })
         $mod_panel.find('#decode').click(function () {
@@ -71,18 +74,33 @@
                 result += words.toString(CryptoJS.enc.Utf8) + '\n'
               }
               $output.val(result)
+              $output.select()
+              document.execCommand('Copy')
+              toast('✅ 转换结果已复制到剪切板', 3000, 'success')
             }
           } catch (e) {
-            toast('😓 ' + e.message, 3000)
+            toast('😓 ' + e.message, 3000, 'warning')
           }
         })
       })()
-      function toast(msg, duration) {
+      function toast(msg, duration, type) {
         duration = isNaN(duration) ? 3000 : duration
         var m = document.createElement('div')
         m.innerHTML = msg
         m.style.cssText =
-          'font-family:siyuan;max-width:60%;min-width: 150px;padding:0 14px;height: 40px;color: rgb(230, 162, 60);line-height: 40px;text-align: center;border-radius: 4px;border:1px solid #faecd8;position: fixed;top: 4%;left: 50%;transform: translate(-50%, -50%);z-index: 999999;background: #fdf6ec;font-size: 16px;'
+          'font-family:siyuan;max-width:60%;min-width: 150px;padding:0 14px;height: 40px;line-height: 40px;text-align: center;border-radius: 4px;position: fixed;top: 4%;left: 50%;transform: translate(-50%, -50%);z-index: 999999;font-size: 16px;'
+        switch (type) {
+          case 'warning':
+            m.style.cssText += 'background: #fdf6ec;border:1px solid #faecd8;color: rgb(230, 162, 60);'
+            break
+          case 'error':
+            m.style.cssText += 'background: #fef0f0;border:1px solid #fde2e2;color: rgb(245, 108, 108);'
+            break
+          case 'success':
+          default:
+            m.style.cssText += 'background: #f0f9eb;border:1px solid #e1f3d8;color: rgb(145, 191, 105);'
+            break
+        }
         document.body.appendChild(m)
         setTimeout(function () {
           var d = 0.5
