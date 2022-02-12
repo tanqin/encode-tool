@@ -5,13 +5,14 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon" />
-    <title>base64解码/编码工具</title>
+    <title>base64编码/解码工具</title>
     <link rel="stylesheet" href="./style/page.css" type="text/css" />
+    <link rel="stylesheet" href="./style//scrollbar.css" type="text/css" />
   </head>
   <body>
     <div class="mod-panel">
-      <h1>base64解码/编码工具</h1>
-      <div class="row">
+      <section class="row">
+        <h3>base64编码/解码工具</h3>
         <div class="col-md-12">
           <form class="form-horizontal">
             <div class="form-group clearfix">
@@ -25,26 +26,48 @@
               <div class="col-md-8">
                 <button id="encode" class="btn btn-primary" type="button">Base64编码</button>
                 <button id="decode" class="btn btn-primary" type="button">Base64解码</button>
+                <button id="get-nodes" class="btn btn-primary" type="button">获取节点</button>
               </div>
             </div>
             <div class="form-group clearfix">
               <label class="col-md-2 control-label">转换结果：</label>
               <div class="col-md-8">
                 <textarea id="output" class="form-control" style="height: 150px"></textarea>
+                <div>节点数量：10 个</div>
               </div>
             </div>
           </form>
         </div>
-      </div>
+      </section>
+      <section class="row">
+        <h3>订阅转换</h3>
+        <div class="col-md-12">
+          <form class="form-horizontal">
+            <div class="form-group clearfix">
+              <nav class="tabs col-md-2 control-label">
+                <ul>
+                  <li class="active-tab">sub 转换工具</li>
+                  <li>边缘转换工具</li>
+                </ul>
+              </nav>
+              <div class="iframe-box col-md-8">
+                <iframe class="active-iframe form-control" src="https://sub.v1.mk/"  frameborder="0" ></iframe>
+                <iframe class="form-control" src="https://bianyuan.xyz/"  frameborder="0" ></iframe>
+              </div>
+            </div>
+          </form>
+        </div>
+      </section>
     </div>
     <script type="text/javascript" src="./lib/jquery.js"></script>
     <script type="text/javascript" src="./lib/core-min.js"></script>
     <script type="text/javascript" src="./lib/enc-base64-min.js"></script>
     <script type="text/javascript">
       ;(function () {
-        var $mod_panel = $('.mod-panel')
-        var $input = $mod_panel.find('#input')
-        var $output = $mod_panel.find('#output')
+        const $mod_panel = $('.mod-panel')
+        const $input = $mod_panel.find('#input')
+        const $output = $mod_panel.find('#output')
+        const $get_nodes = $mod_panel.find('#get-nodes')
         $mod_panel.find('#encode').click(function () {
           var value = $input.val()
           var result = ''
@@ -55,10 +78,10 @@
               $output.val(result)
               $output.select()
               document.execCommand('Copy')
-              toast('✅ 转换结果已复制到剪切板', 3000, 'success')
+              toast('✅ 转换结果已复制至剪切板！', 3000, 'success')
             }
           } catch (e) {
-            toast('😓 ' + e.message, 3000, 'warning')
+            toast('😓 ' + e.message + '！', 3000, 'warning')
           }
         })
         $mod_panel.find('#decode').click(function () {
@@ -76,11 +99,21 @@
               $output.val(result)
               $output.select()
               document.execCommand('Copy')
-              toast('✅ 转换结果已复制到剪切板', 3000, 'success')
+              toast('✅ 转换结果已复制至剪切板！', 3000, 'success')
             }
           } catch (e) {
-            toast('😓 ' + e.message, 3000, 'warning')
+            toast('😓 ' + e.message + '！', 3000, 'warning')
           }
+        })
+        $get_nodes.click(() => {
+          $.ajax({
+            url: 'https://api.v1.mk/sub?target=ss&url=https%3A%2F%2Fproxypoolss.fly.dev%2Fclash%2Fproxies%3Fc%3DCN%2CHK%2CTW%2CJP%2CUS%26type%3Dss%2Cvmess&insert=false&config=https%3A%2F%2Fraw.githubusercontent.com%2FMeilieage%2Fwebcdn%2Fmain%2Frule%2FArea_Media_NoAuto.ini&emoji=true&list=false&udp=false&tfo=false&expand=true&scv=false&fdn=false&sort=false',
+            type: 'GET',
+            success: data => {
+              console.log(data)
+              $input.val(data)
+            }
+          })
         })
       })()
       function toast(msg, duration, type) {
@@ -111,6 +144,14 @@
           }, d * 1000)
         }, duration)
       }
+
+      $('ul li').click(function () {
+        $(this).addClass('active-tab')
+        $(this).siblings().removeClass('active-tab')
+
+        $('.iframe-box iframe').eq($(this).index()).addClass('active-iframe')
+        $('.iframe-box iframe').eq($(this).index()).siblings().removeClass('active-iframe')
+      })
     </script>
   </body>
 </html>
