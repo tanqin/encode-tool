@@ -5,13 +5,48 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon" />
-    <title>小工具</title>
+    <title>node-list 小工具</title>
     <link rel="stylesheet" href="./style/page.css" type="text/css" />
     <link rel="stylesheet" href="./style//scrollbar.css" type="text/css" />
   </head>
   <body>
     <div class="mod-panel">
-      <h1>小工具</h1>
+      <h1>(●'◡'●)node-list 小工具(●'◡'●)</h1>
+      <section class="row">
+        <h3>节点池</h3>
+        <div class="col-md-12">
+          <form class="form-horizontal">
+            <div class="form-group clearfix">
+              <label class="col-md-2 control-label">池子选择：</label>
+              <div class="col-md-8">
+                <div class="checkbox-group">
+                  <div class="cntr">
+                    <input type="checkbox" id="cbx0" class="hidden-xs-up" data-cid="0" />
+                    <label for="cbx0" class="cbx"></label>
+                    <span>Free886-V2ray</span>
+                  </div>
+                  <div class="cntr">
+                    <input type="checkbox" id="cbx1" class="hidden-xs-up" data-cid="1" />
+                    <label for="cbx1" class="cbx"></label>
+                    <span>Free886-SS</span>
+                  </div>
+                  <div class="cntr">
+                    <input type="checkbox" id="cbx2" class="hidden-xs-up" data-cid="2" />
+                    <label for="cbx2" class="cbx"></label>
+                    <span>FQ-V2ray</span>
+                  </div>
+                  <div class="cntr">
+                    <input type="checkbox" id="cbx3" class="hidden-xs-up" data-cid="3" />
+                    <label for="cbx3" class="cbx"></label>
+                    <span>FQ-V2ray</span>
+                  </div>
+                </div>
+              </div>
+              <div class="button-box"><button id="get-nodes" class="button-1" type="button">获取节点数据</button></div>
+            </div>
+          </form>
+        </div>
+      </section>
       <section class="row">
         <h3>base64编码/解码工具</h3>
         <div class="col-md-12">
@@ -27,14 +62,13 @@
               <div class="col-md-8 button-group">
                 <button id="encode" class="button-1" type="button">Base64 编码</button>
                 <button id="decode" class="button-1" type="button">Base64 解码</button>
-                <button id="get-nodes" class="button-1" type="button">获取节点数据</button>
               </div>
             </div>
             <div class="form-group clearfix">
               <label class="col-md-2 control-label">转换结果：</label>
               <div class="col-md-8">
                 <textarea id="output" class="form-control" style="height: 150px"></textarea>
-                <div>节点数量：10 个</div>
+                <div class="count">节点数量：0 个</div>
               </div>
             </div>
           </form>
@@ -93,9 +127,18 @@
         const $input = $mod_panel.find('#input')
         const $output = $mod_panel.find('#output')
         const $get_nodes = $mod_panel.find('#get-nodes')
+        const allList = [
+          { cid: 0, url: 'https://suo.yt/2x4Bmad' },
+          { cid: 1, url: 'https://v1.mk/u7GQeDv' },
+          { cid: 2, url: 'https://suo.yt/4AtGLbZ' },
+          { cid: 3, url: 'https://suo.yt/uuLxFH6' }
+        ]
+        let checkedList = []
+
+        // 编码
         $mod_panel.find('#encode').click(function () {
-          var value = $input.val()
-          var result = ''
+          let value = $input.val()
+          let result = ''
           $output.val('')
           try {
             if (value) {
@@ -106,76 +149,117 @@
               toast('✅ 转换结果已复制至剪切板！', 3000, 'success')
             }
           } catch (e) {
-            toast('😓 ' + e.message + '！', 3000, 'warning')
+            toast('😓 莫名其妙出错了！！', 3000, 'warning')
           }
         })
+
+        // 解码
         $mod_panel.find('#decode').click(function () {
-          var value = $input.val()
-          var result = ''
+          let value = $input.val()
+          let result = ''
+          let count = 0
           $output.val('')
           try {
             if (value) {
               value = value.split('\n')
-              var words = ''
-              for (var i = 0; i < value.length; i++) {
+              let words = ''
+              for (let i = 0; i < value.length; i++) {
                 words = CryptoJS.enc.Base64.parse(value[i])
                 result += words.toString(CryptoJS.enc.Utf8) + '\n'
               }
+              count = result.match(new RegExp('\n', 'g')).length
+              $('.count').text(`节点数量：${count} 个`)
+
+              result = result.slice(0, -2)
+
               $output.val(result)
               $output.select()
               document.execCommand('Copy')
               toast('✅ 转换结果已复制至剪切板！', 3000, 'success')
             }
           } catch (e) {
-            toast('😓 ' + e.message + '！', 3000, 'warning')
+            toast('😓 莫名其妙出错了！', 3000, 'warning')
           }
         })
+
+        // 切换转换工具
+        $('ul li').click(function () {
+          $(this).addClass('active-tab')
+          $(this).siblings().removeClass('active-tab')
+
+          $('.iframe-box iframe').eq($(this).index()).addClass('active-iframe')
+          $('.iframe-box iframe').eq($(this).index()).siblings().removeClass('active-iframe')
+        })
+
+        // 默认选中项 && 默认选中节点列表
+        $('.checkbox-group .cntr').eq(0).find('.hidden-xs-up').prop('checked', true)
+        checkedList.push(allList[0])
+
+        // 多选框选择
+        $('.checkbox-group .hidden-xs-up').click(function () {
+          if ($(this).prop('checked')) {
+            const findItem = allList.find(item => {
+              return $(this).data('cid') === item.cid
+            })
+            findItem && checkedList.push(findItem)
+          } else {
+            checkedList = checkedList.filter(item => item.cid !== $(this).data('cid'))
+          }
+        })
+
+        // 获取节点
         $get_nodes.click(() => {
+          if (!checkedList.length) return $output.val('')
+          const checkUrlList = checkedList.map(item => item.url)
+          $input.val('')
+          httpRequest(checkUrlList, 0)
+        })
+
+        // 请求 - 递归
+        const httpRequest = (list, index) => {
           $.ajax({
-            url: 'https://gitee.com/imtanqin/node-list/raw/master/node-base64.txt',
+            url: list[index],
             type: 'GET',
             success: data => {
-              $input.val(data)
+              const newStr = $input.val() + data + (index === list.length - 1 ? '' : '\n')
+              $input.val(newStr)
+              $output.val('')
+              if (++index === list.length) return
+              httpRequest(list, index)
             }
           })
-        })
-      })()
-      function toast(msg, duration, type) {
-        duration = isNaN(duration) ? 3000 : duration
-        var m = document.createElement('div')
-        m.innerHTML = msg
-        m.style.cssText =
-          'font-family:siyuan;max-width:60%;min-width: 150px;padding:0 14px;height: 40px;line-height: 40px;text-align: center;border-radius: 4px;position: fixed;top: 4%;left: 50%;transform: translate(-50%, -50%);z-index: 999999;font-size: 16px;'
-        switch (type) {
-          case 'warning':
-            m.style.cssText += 'background: #fdf6ec;border:1px solid #faecd8;color: rgb(230, 162, 60);'
-            break
-          case 'error':
-            m.style.cssText += 'background: #fef0f0;border:1px solid #fde2e2;color: rgb(245, 108, 108);'
-            break
-          case 'success':
-          default:
-            m.style.cssText += 'background: #f0f9eb;border:1px solid #e1f3d8;color: rgb(145, 191, 105);'
-            break
         }
-        document.body.appendChild(m)
-        setTimeout(function () {
-          var d = 0.5
-          m.style.webkitTransition = '-webkit-transform ' + d + 's ease-in, opacity ' + d + 's ease-in'
-          m.style.opacity = '0'
+
+        // 轻提示
+        function toast(msg, duration, type) {
+          duration = isNaN(duration) ? 3000 : duration
+          var m = document.createElement('div')
+          m.innerHTML = msg
+          m.style.cssText =
+            'font-family:siyuan;max-width:60%;min-width: 150px;padding:0 14px;height: 40px;line-height: 40px;text-align: center;border-radius: 4px;position: fixed;top: 4%;left: 50%;transform: translate(-50%, -50%);z-index: 999999;font-size: 16px;'
+          switch (type) {
+            case 'warning':
+              m.style.cssText += 'background: #fdf6ec;border:1px solid #faecd8;color: rgb(230, 162, 60);'
+              break
+            case 'error':
+              m.style.cssText += 'background: #fef0f0;border:1px solid #fde2e2;color: rgb(245, 108, 108);'
+              break
+            case 'success':
+            default:
+              m.style.cssText += 'background: #f0f9eb;border:1px solid #e1f3d8;color: rgb(145, 191, 105);'
+              break
+          }
+          document.body.appendChild(m)
           setTimeout(function () {
-            document.body.removeChild(m)
-          }, d * 1000)
-        }, duration)
-      }
-
-      $('ul li').click(function () {
-        $(this).addClass('active-tab')
-        $(this).siblings().removeClass('active-tab')
-
-        $('.iframe-box iframe').eq($(this).index()).addClass('active-iframe')
-        $('.iframe-box iframe').eq($(this).index()).siblings().removeClass('active-iframe')
-      })
+            var d = 0.5
+            m.style.webkitTransition = '-webkit-transform ' + d + 's ease-in, opacity ' + d + 's ease-in'
+            m.style.opacity = '0'
+            setTimeout(function () {
+              document.body.removeChild(m)
+            }, d * 1000)
+          }, duration)
+        }
+      })()
     </script>
   </body>
 </html>
